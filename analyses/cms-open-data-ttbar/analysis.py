@@ -279,7 +279,10 @@ def book_histos(
         histo = df.Histo1D(histo_model, observable, "weights")
         print(f"Booked histogram {histo_model.fName}")
         if variation == "nominal":
-            result = ROOT.RDF.Experimental.VariationsFor(histo)
+            if type(histo).__name__ == "ActionProxy":
+                result = ROOT.RDF.Experimental.Distributed.VariationsFor(histo)
+            else:
+                result = ROOT.RDF.Experimental.VariationsFor(histo)
             results.append(AGCResult(result, region, process, variation))
         else:
             results.append(AGCResult(histo, region, process, variation))
@@ -336,6 +339,7 @@ def main() -> None:
 
     # Run the event loops for all processes and variations here
     run_graphs_start = time()
+    # FIXME isinstance(h, RResultPtr) does not work for distRDF
     handles = [r.histo for r in results if isinstance(r.histo, ROOT.RDF.RResultPtr[ROOT.TH1D])]
     ROOT.RDF.RunGraphs(handles)
     print(f"Executing the computation graphs took {time() - run_graphs_start:.2f} seconds")

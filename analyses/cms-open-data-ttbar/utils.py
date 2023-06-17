@@ -133,6 +133,7 @@ def postprocess_results(results: list[AGCResult]):
     """
 
     # Substitute RResultPtrs and RResultMaps of histograms to actual histograms
+    # FIXME cannot match with `isinstance`, types are different for distRDF
     new_results = []
     for res in results:
         if isinstance(res.histo, ROOT.RDF.RResultPtr[ROOT.TH1D]):
